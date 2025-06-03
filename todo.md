@@ -300,11 +300,11 @@ Produce summary printout.
 - [ ] Unit test: accept → complete updates XP and status
 
 ## 6  Inventory
-- [ ] `inventory={}` array of `{id,qty}`
-- [ ] Implement `add_item(id,qty)`
-- [ ] Implement `remove_item(id,qty)`
-- [ ] Inventory panel toggle
-- [ ] Unit test: add 3, remove 2 → remaining 1
+- [x] `inventory={}` array of `{id,qty}`
+- [x] Implement `add_item(id,qty)`
+- [x] Implement `remove_item(id,qty)`
+- [x] Inventory panel toggle
+- [x] Unit test: add 3, remove 2 → remaining 1
 
 ## 7  Skills
 - [ ] `skills={sword={lvl=1,xp=0},magic={...},heal={...},fish={...}}`
