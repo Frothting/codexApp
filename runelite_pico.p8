@@ -38,10 +38,10 @@ function is_walkable(tx,ty)
     return not fget(mget(tx,ty),0)
 end
 
-function draw_bar(x,y,w,h,val,max,col_full,col_empty)
+function draw_bar(x,y,w,h,val,max_val,col_full,col_empty)
     local fill=0
-    if max>0 then
-        fill=flr(w*val/max)
+    if max_val>0 then
+        fill=flr(w*val/max_val)
     end
     rectfill(x,y,x+w-1,y+h-1,col_empty)
     if fill>0 then
@@ -245,7 +245,7 @@ end)
 
 add_test(function()
     player={x=0,y=0,spd=1,hp=10,max_hp=10,mana=5,max_mana=5,xp=0,max_xp=10}
-    quests={{id=1,type="test",arg=0,status=Q_NONE,reward_xp=3}}
+    quests={{id=1,qtype="test",arg=0,status=Q_NONE,reward_xp=3}}
     accept_quest(1)
     assert_eq(quests[1].status,Q_ACTIVE,"quest accepted")
     complete_quest(1)
