@@ -42,6 +42,12 @@ skills={
     fish={lvl=1,xp=0}
 }
 
+-- basic spells
+spells={
+    fire={id="fire",cost=3,damage=4},
+    heal={id="heal",cost=2,heal=5}
+}
+
 -- npc + dialog
 npcs={{x=80,y=64,id=1,dialog="hello adventurer"}}
 game_state="play"
@@ -82,6 +88,22 @@ function gain_xp(skill,amt)
             s.lvl+=1
         end
     end
+end
+
+function cast_spell(spell,target)
+    if player.mana<spell.cost then return false end
+    player.mana-=spell.cost
+    if spell.damage then
+        target.hp=max(0,(target.hp or 0)-spell.damage)
+    end
+    if spell.heal then
+        if target.max_hp then
+            target.hp=min(target.max_hp,target.hp+spell.heal)
+        else
+            target.hp=(target.hp or 0)+spell.heal
+        end
+    end
+    return true
 end
 
 function update_player()
@@ -201,6 +223,22 @@ function update_enemies()
     end
 end
 
+function handle_spells()
+    if btnp(6) then
+        local mx=T.stat(32)
+        local my=T.stat(33)
+        for e in all(enemies) do
+            if mx>=e.x and mx<=e.x+7 and my>=e.y and my<=e.y+7 and e.hp>0 then
+                cast_spell(spells.fire,e)
+                break
+            end
+        end
+    end
+    if btnp(5) then
+        cast_spell(spells.heal,player)
+    end
+end
+
 function accept_quest(id)
     for q in all(quests) do
         if q.id==id then
@@ -256,6 +294,7 @@ function _update()
     if btnp(4) then
         toggle_inventory()
     end
+    handle_spells()
     update_player()
     update_npcs()
     update_enemies()
@@ -401,4 +440,21 @@ add_test(function()
     T.stat=stat
     assert_eq(enemies[1].hp,3,"enemy dmg")
     assert_eq(attack_cooldown,15,"cooldown set")
+end)
+
+add_test(function()
+    player={mana=5}
+    local e={hp=5}
+    cast_spell(spells.fire,e)
+    assert_eq(player.mana,2,"fire mana")
+    assert_eq(e.hp,1,"fire dmg")
+end)
+
+add_test(function()
+    player={hp=3,max_hp=10,mana=5}
+    cast_spell(spells.heal,player)
+    assert_eq(player.hp,8,"heal hp")
+    assert_eq(player.mana,3,"heal mana")
+    cast_spell(spells.heal,player)
+    assert_eq(player.hp,10,"heal clamp")
 end)
