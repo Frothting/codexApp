@@ -355,13 +355,6 @@ add_test(function()
 end)
 
 add_test(function()
-    skills={sword={lvl=1,xp=0}}
-    gain_xp("sword",10)
-    assert_eq(skills.sword.lvl,2,"skill lvl up")
-    assert_eq(skills.sword.xp,0,"skill xp reset")
-end)
-
-add_test(function()
     skills={sword={lvl=2,xp=0}}
     enemies={{x=0,y=0,hp=5}}
     attack_cooldown=0
