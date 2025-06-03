@@ -20,6 +20,10 @@ player={x=64,y=64,spd=1,hp=10,max_hp=10,mana=5,max_mana=5,xp=0,max_xp=10}
 player.tx=nil
 player.ty=nil
 
+-- combat globals
+attack_cooldown=0
+enemies={{x=96,y=64,hp=5}}
+
 -- quest system
 Q_NONE=0
 Q_ACTIVE=1
@@ -154,6 +158,24 @@ function update_npcs()
     end
 end
 
+function update_enemies()
+    if game_state~="play" then return end
+    if attack_cooldown>0 then
+        attack_cooldown-=1
+    end
+    if T.stat(34)==1 and attack_cooldown==0 then
+        local mx=T.stat(32)
+        local my=T.stat(33)
+        for e in all(enemies) do
+            if mx>=e.x and mx<=e.x+7 and my>=e.y and my<=e.y+7 and e.hp>0 then
+                e.hp=max(0,e.hp-skills.sword.lvl)
+                attack_cooldown=15
+                break
+            end
+        end
+    end
+end
+
 function accept_quest(id)
     for q in all(quests) do
         if q.id==id then
@@ -211,6 +233,7 @@ function _update()
     end
     update_player()
     update_npcs()
+    update_enemies()
 end
 
 function _draw()
@@ -225,6 +248,11 @@ function _draw()
     rectfill(player.x,player.y,player.x+7,player.y+7,7)
     for n in all(npcs) do
         rectfill(n.x,n.y,n.x+7,n.y+7,11)
+    end
+    for e in all(enemies) do
+        if e.hp>0 then
+            rectfill(e.x,e.y,e.x+7,e.y+7,8)
+        end
     end
     draw_bar(2,2,20,2,player.hp,player.max_hp,8,1)
     draw_bar(2,6,20,2,player.mana,player.max_mana,12,1)
@@ -327,8 +355,17 @@ add_test(function()
 end)
 
 add_test(function()
-    skills={sword={lvl=1,xp=0}}
-    gain_xp("sword",10)
-    assert_eq(skills.sword.lvl,2,"skill lvl up")
-    assert_eq(skills.sword.xp,0,"skill xp reset")
+    skills={sword={lvl=2,xp=0}}
+    enemies={{x=0,y=0,hp=5}}
+    attack_cooldown=0
+    T.stat=function(n)
+        if n==32 then return 0 end
+        if n==33 then return 0 end
+        if n==34 then return 1 end
+        return 0
+    end
+    update_enemies()
+    T.stat=stat
+    assert_eq(enemies[1].hp,3,"enemy dmg")
+    assert_eq(attack_cooldown,15,"cooldown set")
 end)

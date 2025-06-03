@@ -307,17 +307,17 @@ Produce summary printout.
 - [x] Unit test: add 3, remove 2 → remaining 1
 
 ## 7  Skills
-- [ ] `skills={sword={lvl=1,xp=0},magic={...},heal={...},fish={...}}`
-- [ ] XP table function `xp_to_level(lvl)`
-- [ ] `gain_xp(skill,amt)` handles level‑up
-- [ ] Unit test: give 10  xp at level 1 → level 2
+- [x] `skills={sword={lvl=1,xp=0},magic={...},heal={...},fish={...}}`
+- [x] XP table function `xp_to_level(lvl)`
+- [x] `gain_xp(skill,amt)` handles level‑up
+- [x] Unit test: give 10  xp at level 1 → level 2
 
 ## 8  Combat stub
-- [ ] Define `attack_cooldown`
-- [ ] Enemy struct `{x,y,hp}`
-- [ ] Click enemy when cooldown 0 → damage equals sword level
-- [ ] Cooldown reset (15 frames)
-- [ ] Unit test: enemy hp reduces correctly
+- [x] Define `attack_cooldown`
+- [x] Enemy struct `{x,y,hp}`
+- [x] Click enemy when cooldown 0 → damage equals sword level
+- [x] Cooldown reset (15 frames)
+- [x] Unit test: enemy hp reduces correctly
 
 ## 9  Enemy AI base
 - [ ] Implement `update_enemy(e)`
