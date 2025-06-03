@@ -269,17 +269,17 @@ Produce summary printout.
 - [x] Unit test: `1+1==2` passes
 
 ## 2  Movement baseline
-- [ ] Define `player={x,y,spd}`
-    - [ ] Position defaults `(64,64)`
-    - [ ] Speed default `1`
-- [ ] Implement `update_player()`
-    - [ ] Arrow‑key movement
-    - [ ] Event `player_arrived`
-- [ ] Encode solid tiles with flag `0x01`
-- [ ] Implement `is_walkable(tx,ty)`
-- [ ] Mouse click stores target tile
-- [ ] Linear move toward target each frame
-- [ ] Unit test: move right four frames → `x==68`
+- [x] Define `player={x,y,spd}`
+    - [x] Position defaults `(64,64)`
+    - [x] Speed default `1`
+- [x] Implement `update_player()`
+    - [x] Arrow‑key movement
+    - [x] Event `player_arrived`
+- [x] Encode solid tiles with flag `0x01`
+- [x] Implement `is_walkable(tx,ty)`
+- [x] Mouse click stores target tile
+- [x] Linear move toward target each frame
+- [x] Unit test: move right four frames → `x==68`
 
 ## 3  UI baseline
 - [ ] Implement `draw_bar(x,y,w,h,val,max,col_full,col_empty)`
