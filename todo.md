@@ -287,10 +287,10 @@ Produce summary printout.
 - [x] Draw cursor highlight over clickable tiles
 
 ## 4  NPC + dialog
-- [ ] Define `npcs[]` with `x,y,id,dialog`
-- [ ] Click within 8 px opens dialog modal
-- [ ] Second click closes dialog
-- [ ] Unit test: `open_dialog` sets `game_state=="dialog"`
+- [x] Define `npcs[]` with `x,y,id,dialog`
+- [x] Click within 8 px opens dialog modal
+- [x] Second click closes dialog
+- [x] Unit test: `open_dialog` sets `game_state=="dialog"`
 
 ## 5  Quest core
 - [ ] Define enums `Q_NONE=0,Q_ACTIVE=1,Q_DONE=2`
