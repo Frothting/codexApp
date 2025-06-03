@@ -16,7 +16,7 @@ function fire_event(ev)
     add(T.events,ev)
 end
 
-player={x=64,y=64,spd=1}
+player={x=64,y=64,spd=1,hp=10,max_hp=10,mana=5,max_mana=5,xp=0,max_xp=10}
 player.tx=nil
 player.ty=nil
 
@@ -25,6 +25,17 @@ FLAG_SOLID=0x01
 
 function is_walkable(tx,ty)
     return not fget(mget(tx,ty),0)
+end
+
+function draw_bar(x,y,w,h,val,max,col_full,col_empty)
+    local fill=0
+    if max>0 then
+        fill=flr(w*val/max)
+    end
+    rectfill(x,y,x+w-1,y+h-1,col_empty)
+    if fill>0 then
+        rectfill(x,y,x+fill-1,y+h-1,col_full)
+    end
 end
 
 function update_player()
@@ -88,7 +99,17 @@ end
 
 function _draw()
     cls()
+    local mx=T.stat(32)
+    local my=T.stat(33)
+    local tx=flr(mx/8)
+    local ty=flr(my/8)
+    if is_walkable(tx,ty) then
+        rect(tx*8,ty*8,tx*8+7,ty*8+7,10)
+    end
     rectfill(player.x,player.y,player.x+7,player.y+7,7)
+    draw_bar(2,2,20,2,player.hp,player.max_hp,8,1)
+    draw_bar(2,6,20,2,player.mana,player.max_mana,12,1)
+    draw_bar(2,10,20,2,player.xp,player.max_xp,9,1)
 end
 
 tests={}
@@ -135,4 +156,15 @@ add_test(function()
     end
     T.btn=btn
     assert_eq(player.x,68,"move right 4")
+end)
+
+add_test(function()
+    local calls=0
+    local old_rectfill=rectfill
+    rectfill=function()
+        calls+=1
+    end
+    draw_bar(0,0,8,1,4,8,8,1)
+    rectfill=old_rectfill
+    assert_eq(calls,2,"draw_bar rects")
 end)

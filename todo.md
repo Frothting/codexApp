@@ -282,9 +282,9 @@ Produce summary printout.
 - [x] Unit test: move right four frames → `x==68`
 
 ## 3  UI baseline
-- [ ] Implement `draw_bar(x,y,w,h,val,max,col_full,col_empty)`
-- [ ] Render HP, MP, XP bars
-- [ ] Draw cursor highlight over clickable tiles
+- [x] Implement `draw_bar(x,y,w,h,val,max,col_full,col_empty)`
+- [x] Render HP, MP, XP bars
+- [x] Draw cursor highlight over clickable tiles
 
 ## 4  NPC + dialog
 - [ ] Define `npcs[]` with `x,y,id,dialog`
