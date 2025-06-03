@@ -20,6 +20,12 @@ player={x=64,y=64,spd=1,hp=10,max_hp=10,mana=5,max_mana=5,xp=0,max_xp=10}
 player.tx=nil
 player.ty=nil
 
+-- quest system
+Q_NONE=0
+Q_ACTIVE=1
+Q_DONE=2
+quests={}
+
 -- npc + dialog
 npcs={{x=80,y=64,id=1,dialog="hello adventurer"}}
 game_state="play"
@@ -121,6 +127,25 @@ function update_npcs()
     end
 end
 
+function accept_quest(id)
+    for q in all(quests) do
+        if q.id==id then
+            q.status=Q_ACTIVE
+            break
+        end
+    end
+end
+
+function complete_quest(id)
+    for q in all(quests) do
+        if q.id==id and q.status==Q_ACTIVE then
+            q.status=Q_DONE
+            player.xp=mid(0,player.xp+q.reward_xp,player.max_xp)
+            break
+        end
+    end
+end
+
 function _init()
 end
 
@@ -216,4 +241,14 @@ add_test(function()
     game_state="play"
     open_dialog({dialog="test"})
     assert_eq(game_state,"dialog","open_dialog state")
+end)
+
+add_test(function()
+    player={x=0,y=0,spd=1,hp=10,max_hp=10,mana=5,max_mana=5,xp=0,max_xp=10}
+    quests={{id=1,type="test",arg=0,status=Q_NONE,reward_xp=3}}
+    accept_quest(1)
+    assert_eq(quests[1].status,Q_ACTIVE,"quest accepted")
+    complete_quest(1)
+    assert_eq(quests[1].status,Q_DONE,"quest done")
+    assert_eq(player.xp,3,"quest xp")
 end)
