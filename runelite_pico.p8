@@ -30,6 +30,14 @@ quests={}
 inventory={}
 inventory_open=false
 
+-- skills table
+skills={
+    sword={lvl=1,xp=0},
+    magic={lvl=1,xp=0},
+    heal={lvl=1,xp=0},
+    fish={lvl=1,xp=0}
+}
+
 -- npc + dialog
 npcs={{x=80,y=64,id=1,dialog="hello adventurer"}}
 game_state="play"
@@ -50,6 +58,21 @@ function draw_bar(x,y,w,h,val,max_val,col_full,col_empty)
     rectfill(x,y,x+w-1,y+h-1,col_empty)
     if fill>0 then
         rectfill(x,y,x+fill-1,y+h-1,col_full)
+    end
+end
+
+function xp_to_level(lvl)
+    return lvl*10
+end
+
+function gain_xp(skill,amt)
+    local s=skills[skill]
+    if s then
+        s.xp+=amt
+        while s.xp>=xp_to_level(s.lvl) do
+            s.xp-=xp_to_level(s.lvl)
+            s.lvl+=1
+        end
     end
 end
 
@@ -301,4 +324,11 @@ add_test(function()
     remove_item(1,2)
     assert_eq(#inventory,1,"inv count")
     assert_eq(inventory[1].qty,1,"inv qty")
+end)
+
+add_test(function()
+    skills={sword={lvl=1,xp=0}}
+    gain_xp("sword",10)
+    assert_eq(skills.sword.lvl,2,"skill lvl up")
+    assert_eq(skills.sword.xp,0,"skill xp reset")
 end)
