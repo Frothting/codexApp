@@ -20,6 +20,11 @@ player={x=64,y=64,spd=1,hp=10,max_hp=10,mana=5,max_mana=5,xp=0,max_xp=10}
 player.tx=nil
 player.ty=nil
 
+-- npc + dialog
+npcs={{x=80,y=64,id=1,dialog="hello adventurer"}}
+game_state="play"
+current_dialog=nil
+
 -- tile flag for solid collision
 FLAG_SOLID=0x01
 
@@ -87,6 +92,35 @@ function update_player()
     return moved
 end
 
+function open_dialog(n)
+    current_dialog=n.dialog
+    game_state="dialog"
+end
+
+function close_dialog()
+    current_dialog=nil
+    game_state="play"
+end
+
+function update_npcs()
+    if T.stat(34)==1 then
+        local mx=T.stat(32)
+        local my=T.stat(33)
+        if game_state=="play" then
+            for n in all(npcs) do
+                local dx=mx-n.x
+                local dy=my-n.y
+                if dx*dx+dy*dy<=64 then
+                    open_dialog(n)
+                    break
+                end
+            end
+        else
+            close_dialog()
+        end
+    end
+end
+
 function _init()
 end
 
@@ -95,6 +129,7 @@ function _update()
         run_tests()
     end
     update_player()
+    update_npcs()
 end
 
 function _draw()
@@ -107,9 +142,17 @@ function _draw()
         rect(tx*8,ty*8,tx*8+7,ty*8+7,10)
     end
     rectfill(player.x,player.y,player.x+7,player.y+7,7)
+    for n in all(npcs) do
+        rectfill(n.x,n.y,n.x+7,n.y+7,11)
+    end
     draw_bar(2,2,20,2,player.hp,player.max_hp,8,1)
     draw_bar(2,6,20,2,player.mana,player.max_mana,12,1)
     draw_bar(2,10,20,2,player.xp,player.max_xp,9,1)
+    if game_state=="dialog" and current_dialog then
+        rectfill(16,96,111,120,0)
+        rect(16,96,111,120,7)
+        print(current_dialog,18,100,7)
+    end
 end
 
 tests={}
@@ -167,4 +210,10 @@ add_test(function()
     draw_bar(0,0,8,1,4,8,8,1)
     rectfill=old_rectfill
     assert_eq(calls,2,"draw_bar rects")
+end)
+
+add_test(function()
+    game_state="play"
+    open_dialog({dialog="test"})
+    assert_eq(game_state,"dialog","open_dialog state")
 end)
