@@ -30,6 +30,9 @@ quests={}
 inventory={}
 inventory_open=false
 
+-- enemies
+enemies={}
+
 -- npc + dialog
 npcs={{x=80,y=64,id=1,dialog="hello adventurer"}}
 game_state="play"
@@ -131,6 +134,20 @@ function update_npcs()
     end
 end
 
+function update_enemy(e)
+    local dx=player.x-e.x
+    local dy=player.y-e.y
+    if dx*dx+dy*dy<=32*32 then
+        e.vx=sgn(dx)
+        e.vy=sgn(dy)
+    elseif rnd(1)<0.02 then
+        e.vx=flr(rnd(3))-1
+        e.vy=flr(rnd(3))-1
+    end
+    e.x+=e.vx or 0
+    e.y+=e.vy or 0
+end
+
 function accept_quest(id)
     for q in all(quests) do
         if q.id==id then
@@ -188,6 +205,9 @@ function _update()
     end
     update_player()
     update_npcs()
+    for e in all(enemies) do
+        update_enemy(e)
+    end
 end
 
 function _draw()
@@ -301,4 +321,12 @@ add_test(function()
     remove_item(1,2)
     assert_eq(#inventory,1,"inv count")
     assert_eq(inventory[1].qty,1,"inv qty")
+end)
+
+add_test(function()
+    player={x=16,y=16}
+    enemies={{x=0,y=0,vx=0,vy=0}}
+    update_enemy(enemies[1])
+    local e=enemies[1]
+    assert_eq(e.vx==1 and e.vy==1,true,"enemy chase")
 end)
