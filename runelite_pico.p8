@@ -22,7 +22,7 @@ player.ty=nil
 
 -- combat globals
 attack_cooldown=0
-enemies={{x=96,y=64,hp=5}}
+enemies={{x=96,y=64,hp=5,vx=0,vy=0}}
 
 -- quest system
 Q_NONE=0
@@ -63,6 +63,10 @@ function draw_bar(x,y,w,h,val,max_val,col_full,col_empty)
     if fill>0 then
         rectfill(x,y,x+fill-1,y+h-1,col_full)
     end
+end
+
+function sgn(x)
+    if x>0 then return 1 elseif x<0 then return -1 else return 0 end
 end
 
 function xp_to_level(lvl)
@@ -158,10 +162,31 @@ function update_npcs()
     end
 end
 
+function update_enemy(e)
+    local dx=player.x-e.x
+    local dy=player.y-e.y
+    if dx*dx+dy*dy<=1024 then
+        e.vx=sgn(dx)
+        e.vy=sgn(dy)
+    elseif rnd(1)<0.05 then
+        e.vx=flr(rnd(3))-1
+        e.vy=flr(rnd(3))-1
+    end
+    local nx=e.x+e.vx
+    local ny=e.y+e.vy
+    if is_walkable(flr(nx/8),flr(ny/8)) then
+        e.x=nx
+        e.y=ny
+    end
+end
+
 function update_enemies()
     if game_state~="play" then return end
     if attack_cooldown>0 then
         attack_cooldown-=1
+    end
+    for e in all(enemies) do
+        update_enemy(e)
     end
     if T.stat(34)==1 and attack_cooldown==0 then
         local mx=T.stat(32)
@@ -301,6 +326,14 @@ end
 
 add_test(function()
     assert_eq(1+1,2,"math")
+end)
+
+add_test(function()
+    player={x=0,y=0}
+    enemies={{x=16,y=0,hp=5,vx=0,vy=0}}
+    update_enemy(enemies[1])
+    assert_eq(enemies[1].vx,-1,"enemy chase vx")
+    assert_eq(enemies[1].vy,0,"enemy chase vy")
 end)
 
 add_test(function()
