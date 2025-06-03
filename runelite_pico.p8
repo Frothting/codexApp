@@ -26,6 +26,10 @@ Q_ACTIVE=1
 Q_DONE=2
 quests={}
 
+-- inventory system
+inventory={}
+inventory_open=false
+
 -- npc + dialog
 npcs={{x=80,y=64,id=1,dialog="hello adventurer"}}
 game_state="play"
@@ -146,12 +150,41 @@ function complete_quest(id)
     end
 end
 
+function add_item(id,qty)
+    for it in all(inventory) do
+        if it.id==id then
+            it.qty+=qty
+            return
+        end
+    end
+    add(inventory,{id=id,qty=qty})
+end
+
+function remove_item(id,qty)
+    for it in all(inventory) do
+        if it.id==id then
+            it.qty-=qty
+            if it.qty<=0 then
+                del(inventory,it)
+            end
+            break
+        end
+    end
+end
+
+function toggle_inventory()
+    inventory_open=not inventory_open
+end
+
 function _init()
 end
 
 function _update()
     if btnp(7) then
         run_tests()
+    end
+    if btnp(4) then
+        toggle_inventory()
     end
     update_player()
     update_npcs()
@@ -173,6 +206,15 @@ function _draw()
     draw_bar(2,2,20,2,player.hp,player.max_hp,8,1)
     draw_bar(2,6,20,2,player.mana,player.max_mana,12,1)
     draw_bar(2,10,20,2,player.xp,player.max_xp,9,1)
+    if inventory_open then
+        rectfill(96,0,127,63,0)
+        rect(96,0,127,63,7)
+        local y=2
+        for it in all(inventory) do
+            print(it.id..":"..it.qty,98,y,7)
+            y+=6
+        end
+    end
     if game_state=="dialog" and current_dialog then
         rectfill(16,96,111,120,0)
         rect(16,96,111,120,7)
@@ -251,4 +293,12 @@ add_test(function()
     complete_quest(1)
     assert_eq(quests[1].status,Q_DONE,"quest done")
     assert_eq(player.xp,3,"quest xp")
+end)
+
+add_test(function()
+    inventory={}
+    add_item(1,3)
+    remove_item(1,2)
+    assert_eq(#inventory,1,"inv count")
+    assert_eq(inventory[1].qty,1,"inv qty")
 end)
