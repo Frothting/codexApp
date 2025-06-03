@@ -293,11 +293,11 @@ Produce summary printout.
 - [x] Unit test: `open_dialog` sets `game_state=="dialog"`
 
 ## 5  Quest core
-- [ ] Define enums `Q_NONE=0,Q_ACTIVE=1,Q_DONE=2`
-- [ ] Quest struct `{id,type,arg,status,reward_xp}`
-- [ ] `accept_quest(id)` sets status active
-- [ ] `complete_quest(id)` grants reward, sets done
-- [ ] Unit test: accept → complete updates XP and status
+- [x] Define enums `Q_NONE=0,Q_ACTIVE=1,Q_DONE=2`
+- [x] Quest struct `{id,type,arg,status,reward_xp}`
+- [x] `accept_quest(id)` sets status active
+- [x] `complete_quest(id)` grants reward, sets done
+- [x] Unit test: accept→complete updates XP and status
 
 ## 6  Inventory
 - [x] `inventory={}` array of `{id,qty}`
