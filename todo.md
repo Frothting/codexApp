@@ -259,14 +259,14 @@ Produce summary printout.
 # todo.md — RuneLite‑PICO Implementation Checklist
 
 ## 1  Scaffolding
-- [ ] Initialize git repository and remote
-- [ ] Create cart `runelite_pico.p8`
-- [ ] Add CI lint + token‑count script
-- [ ] Define empty `_init()`, `_update()`, `_draw()`
-- [ ] Add shared helper table `T={}`
-- [ ] Implement `assert_eq(a,b,msg)` macro
-- [ ] Inject test trigger on `btnp(7)`
-- [ ] Unit test: `1+1==2` passes
+- [x] Initialize git repository and remote
+- [x] Create cart `runelite_pico.p8`
+- [x] Add CI lint + token‑count script
+- [x] Define empty `_init()`, `_update()`, `_draw()`
+- [x] Add shared helper table `T={}`
+- [x] Implement `assert_eq(a,b,msg)` macro
+- [x] Inject test trigger on `btnp(7)`
+- [x] Unit test: `1+1==2` passes
 
 ## 2  Movement baseline
 - [ ] Define `player={x,y,spd}`
