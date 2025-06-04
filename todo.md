@@ -320,18 +320,18 @@ Produce summary printout.
 - [x] Unit test: enemy hp reduces correctly
 
 ## 9  Enemy AI base
-- [ ] Implement `update_enemy(e)`
-    - [ ] Random wander
-    - [ ] Chase if player within 32  px
-- [ ] Unit test: within range sets velocity toward player
+- [x] Implement `update_enemy(e)`
+    - [x] Random wander
+    - [x] Chase if player within 32  px
+- [x] Unit test: within range sets velocity toward player
 
 ## 10  Magic + healing
-- [ ] Add `player.mana, player.max_mana`
-- [ ] Spell list with `cost,damage/heal`
-- [ ] Cast spell on enemy or player
-- [ ] Unit tests:
-    - [ ] Fire spell reduces mana and enemy hp
-    - [ ] Heal spell restores hp, clamps at max
+- [x] Add `player.mana, player.max_mana`
+- [x] Spell list with `cost,damage/heal`
+- [x] Cast spell on enemy or player
+- [x] Unit tests:
+    - [x] Fire spell reduces mana and enemy hp
+    - [x] Heal spell restores hp, clamps at max
 
 ## 11  Fishing
 - [ ] Map flag `0x02` for water
