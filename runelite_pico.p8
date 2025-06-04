@@ -54,21 +54,21 @@ game_state="play"
 current_dialog=nil
 
 -- tile flag for solid collision
-FLAG_SOLID=0x01
+FLAG_SOLID=0 -- map flag index for solid tiles
 
 -- tile flag for water
-FLAG_WATER=0x02
+FLAG_WATER=1 -- map flag index for water
 
 -- fishing state
 fishing_timer=0
 FISH_ITEM="fish"
 
 function is_walkable(tx,ty)
-    return not fget(mget(tx,ty),0)
+    return not fget(mget(tx,ty),FLAG_SOLID)
 end
 
 function is_water(tx,ty)
-    return fget(mget(tx,ty),1)
+    return fget(mget(tx,ty),FLAG_WATER)
 end
 
 function draw_bar(x,y,w,h,val,max_val,col_full,col_empty)
@@ -139,21 +139,34 @@ function update_player()
 
     -- click to set target tile
     if T.stat(34)==1 then
-        player.tx=flr(T.stat(32)/8)*8
-        player.ty=flr(T.stat(33)/8)*8
+        local tx=flr(T.stat(32)/8)
+        local ty=flr(T.stat(33)/8)
+        if is_walkable(tx,ty) then
+            player.tx=tx*8
+            player.ty=ty*8
+        end
     end
 
     -- step toward target
     if player.tx then
+        local nx=player.x
+        local ny=player.y
         if player.x<player.tx then
-            player.x+=player.spd
+            nx+=player.spd
         elseif player.x>player.tx then
-            player.x-=player.spd
+            nx-=player.spd
         end
         if player.y<player.ty then
-            player.y+=player.spd
+            ny+=player.spd
         elseif player.y>player.ty then
-            player.y-=player.spd
+            ny-=player.spd
+        end
+        if is_walkable(flr(nx/8),flr(ny/8)) then
+            player.x=nx
+            player.y=ny
+        else
+            player.tx=nil
+            player.ty=nil
         end
 
         if player.x==player.tx and player.y==player.ty then
