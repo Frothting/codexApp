@@ -7,7 +7,32 @@ __lua__
 player = {}
 enemy = {}
 
+FLAG_SOLID = 0 -- map flag index for solid tiles
+
+function setup_map()
+    -- fill map with ground tiles
+    for x=0,15 do
+        for y=0,15 do
+            mset(x,y,0)
+        end
+    end
+    -- outer wall using tile 1
+    for i=0,15 do
+        mset(i,0,1)
+        mset(i,15,1)
+        mset(0,i,1)
+        mset(15,i,1)
+    end
+    -- mark tile 1 as solid
+    fset(1,FLAG_SOLID,true)
+end
+
+function is_walkable(tx,ty)
+    return not fget(mget(tx,ty),FLAG_SOLID)
+end
+
 function _init()
+    setup_map()
     player.x = 64
     player.y = 64
     player.w = 8
@@ -20,14 +45,34 @@ function _init()
     enemy.w = 8
     enemy.h = 8
     enemy.health = 3
+    enemy.vx = 0
+    enemy.vy = 0
 end
 
 function _update()
-    -- movement
-    if btn(0) then player.x -= 1 player.dir = 0 end
-    if btn(1) then player.x += 1 player.dir = 1 end
-    if btn(2) then player.y -= 1 player.dir = 2 end
-    if btn(3) then player.y += 1 player.dir = 3 end
+    -- movement with collision
+    local nx = player.x
+    local ny = player.y
+    if btn(0) then nx -= 1 player.dir = 0 end
+    if btn(1) then nx += 1 player.dir = 1 end
+    if btn(2) then ny -= 1 player.dir = 2 end
+    if btn(3) then ny += 1 player.dir = 3 end
+    if is_walkable(flr(nx/8), flr(ny/8)) then
+        player.x = nx
+        player.y = ny
+    end
+
+    -- enemy wander
+    if rnd(1) < 0.05 then
+        enemy.vx = flr(rnd(3)) - 1
+        enemy.vy = flr(rnd(3)) - 1
+    end
+    local ex = enemy.x + enemy.vx
+    local ey = enemy.y + enemy.vy
+    if is_walkable(flr(ex/8), flr(ey/8)) then
+        enemy.x = ex
+        enemy.y = ey
+    end
 
     -- attack
     if btnp(4) and player.attack_timer == 0 then
@@ -49,6 +94,7 @@ end
 
 function _draw()
     cls()
+    map(0,0,0,0,16,16)
     -- player
     rectfill(player.x, player.y, player.x + player.w - 1, player.y + player.h - 1, 11)
 
