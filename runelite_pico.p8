@@ -56,8 +56,19 @@ current_dialog=nil
 -- tile flag for solid collision
 FLAG_SOLID=0x01
 
+-- tile flag for water
+FLAG_WATER=0x02
+
+-- fishing state
+fishing_timer=0
+FISH_ITEM="fish"
+
 function is_walkable(tx,ty)
     return not fget(mget(tx,ty),0)
+end
+
+function is_water(tx,ty)
+    return fget(mget(tx,ty),1)
 end
 
 function draw_bar(x,y,w,h,val,max_val,col_full,col_empty)
@@ -280,6 +291,23 @@ function remove_item(id,qty)
     end
 end
 
+function update_fishing()
+    if fishing_timer>0 then
+        fishing_timer-=1
+        if fishing_timer==0 then
+            if rnd(1)<0.5 then
+                add_item(FISH_ITEM,1)
+            end
+        end
+    elseif T.stat(34)==1 then
+        local tx=flr(T.stat(32)/8)
+        local ty=flr(T.stat(33)/8)
+        if is_water(tx,ty) then
+            fishing_timer=60
+        end
+    end
+end
+
 function toggle_inventory()
     inventory_open=not inventory_open
 end
@@ -298,6 +326,7 @@ function _update()
     update_player()
     update_npcs()
     update_enemies()
+    update_fishing()
 end
 
 function _draw()
@@ -457,4 +486,40 @@ add_test(function()
     assert_eq(player.mana,3,"heal mana")
     cast_spell(spells.heal,player)
     assert_eq(player.hp,10,"heal clamp")
+end)
+
+add_test(function()
+    inventory={}
+    fishing_timer=0
+    local old_stat=T.stat
+    local old_is_water=is_water
+    local old_rnd=rnd
+    is_water=function() return true end
+    -- first attempt fails
+    rnd=function() return 0.6 end
+    T.stat=function(n)
+        if n==34 then return 1 end
+        if n==32 then return 0 end
+        if n==33 then return 0 end
+        return 0
+    end
+    update_fishing()
+    T.stat=function() return 0 end
+    for i=1,60 do update_fishing() end
+    assert_eq(#inventory,0,"fish fail")
+    -- second attempt succeeds
+    rnd=function() return 0.4 end
+    T.stat=function(n)
+        if n==34 then return 1 end
+        if n==32 then return 0 end
+        if n==33 then return 0 end
+        return 0
+    end
+    update_fishing()
+    T.stat=function() return 0 end
+    for i=1,60 do update_fishing() end
+    rnd=old_rnd
+    is_water=old_is_water
+    T.stat=old_stat
+    assert_eq(#inventory,1,"fish succeed")
 end)
