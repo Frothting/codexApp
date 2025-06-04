@@ -19,6 +19,8 @@ end
 player={x=64,y=64,spd=1,hp=10,max_hp=10,mana=5,max_mana=5,xp=0,max_xp=10}
 player.tx=nil
 player.ty=nil
+cam_x=0
+cam_y=0
 
 -- combat globals
 attack_cooldown=0
@@ -139,8 +141,8 @@ function update_player()
 
     -- click to set target tile
     if T.stat(34)==1 then
-        local tx=flr(T.stat(32)/8)
-        local ty=flr(T.stat(33)/8)
+        local tx=flr((T.stat(32)+cam_x)/8)
+        local ty=flr((T.stat(33)+cam_y)/8)
         if is_walkable(tx,ty) then
             player.tx=tx*8
             player.ty=ty*8
@@ -176,6 +178,8 @@ function update_player()
         end
     end
 
+    cam_x=player.x-64
+    cam_y=player.y-64
     return moved
 end
 
@@ -191,8 +195,8 @@ end
 
 function update_npcs()
     if T.stat(34)==1 then
-        local mx=T.stat(32)
-        local my=T.stat(33)
+        local mx=T.stat(32)+cam_x
+        local my=T.stat(33)+cam_y
         if game_state=="play" then
             for n in all(npcs) do
                 local dx=mx-n.x
@@ -235,8 +239,8 @@ function update_enemies()
         update_enemy(e)
     end
     if T.stat(34)==1 and attack_cooldown==0 then
-        local mx=T.stat(32)
-        local my=T.stat(33)
+        local mx=T.stat(32)+cam_x
+        local my=T.stat(33)+cam_y
         for e in all(enemies) do
             if mx>=e.x and mx<=e.x+7 and my>=e.y and my<=e.y+7 and e.hp>0 then
                 e.hp=max(0,e.hp-skills.sword.lvl)
@@ -249,8 +253,8 @@ end
 
 function handle_spells()
     if btnp(6) then
-        local mx=T.stat(32)
-        local my=T.stat(33)
+        local mx=T.stat(32)+cam_x
+        local my=T.stat(33)+cam_y
         for e in all(enemies) do
             if mx>=e.x and mx<=e.x+7 and my>=e.y and my<=e.y+7 and e.hp>0 then
                 cast_spell(spells.fire,e)
@@ -313,8 +317,8 @@ function update_fishing()
             end
         end
     elseif T.stat(34)==1 then
-        local tx=flr(T.stat(32)/8)
-        local ty=flr(T.stat(33)/8)
+        local tx=flr((T.stat(32)+cam_x)/8)
+        local ty=flr((T.stat(33)+cam_y)/8)
         if is_water(tx,ty) then
             fishing_timer=60
         end
@@ -344,8 +348,10 @@ end
 
 function _draw()
     cls()
-    local mx=T.stat(32)
-    local my=T.stat(33)
+    camera(cam_x,cam_y)
+    map(0,0,0,0,128,32)
+    local mx=T.stat(32)+cam_x
+    local my=T.stat(33)+cam_y
     local tx=flr(mx/8)
     local ty=flr(my/8)
     if is_walkable(tx,ty) then
@@ -360,6 +366,7 @@ function _draw()
             rectfill(e.x,e.y,e.x+7,e.y+7,8)
         end
     end
+    camera()
     draw_bar(2,2,20,2,player.hp,player.max_hp,8,1)
     draw_bar(2,6,20,2,player.mana,player.max_mana,12,1)
     draw_bar(2,10,20,2,player.xp,player.max_xp,9,1)
